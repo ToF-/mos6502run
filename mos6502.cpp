@@ -1626,18 +1626,3 @@ void mos6502::Op_TYA(uint16_t src)
 }
 
 
-void mos6502::PrintState(char *buffer) {
-    snprintf(buffer, 128, "PC:   A  X  Y  SP  NV-BDIZC\n%04X  %02X %02X %02X %02X  %c%c-%c%c%c%c%c\n\n", 
-            pc,
-            A,
-            X,
-            Y,
-            sp,
-            status & NEGATIVE ?  '1' : '0',
-            status & OVERFLOW ?  '1' : '0',
-            status & BREAK ?     '1' : '0',
-            status & DECIMAL ?   '1' : '0',
-            status & INTERRUPT ? '1' : '0', 
-            status & ZERO ?      '1' : '0',
-            status & CARRY ?     '1' : '0');
-}

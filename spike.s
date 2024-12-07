@@ -1,4 +1,6 @@
-LDA #$05
+SED
+LDA #80
 CLC
-ADC #$05
+ADC #80
+CLD
 BRK

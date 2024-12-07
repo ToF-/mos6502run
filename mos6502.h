@@ -187,5 +187,4 @@ public:
     uint8_t GetResetA();
     uint8_t GetResetX();
     uint8_t GetResetY();
-    void PrintState(char *buffer);
 };
