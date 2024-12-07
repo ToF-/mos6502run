@@ -2,33 +2,120 @@
 spike.s
 
 
-pgm.s
+    2 A:1000                                     *= $0200
 
-    1 A:1000                                     *= $0200
-    2 A:0200  f8                                 sed 
-    3 A:0201  a9 30                              lda #48
-    4 A:0203  18                                 clc 
-    5 A:0204  69 03                              adc #3
-    6 A:0206  d8                                 cld 
-    7 A:0207  20 1b 02                           jsr chrout
-    8 A:020a  a9 0a                              lda #$0a
-    9 A:020c  20 1b 02                           jsr chrout
-   10 A:020f  a9 0d                              lda #$0d
-   11 A:0211  20 1b 02                           jsr chrout
-   12 A:0214  20 1e 02                           jsr chrin
-   13 A:0217  20 1b 02                           jsr chrout
-   14 A:021a  60                                 rts 
+    4 A:0200  a9 01                              lda #$01
+    5 A:0202  8d 95 02                           sta param
+    6 A:0205  a9 02                              lda #$02
+    7 A:0207  8d 96 02                           sta param+1
+    8 A:020a  a9 04                              lda #$04
+    9 A:020c  8d 97 02                           sta param+2
+   10 A:020f  a9 08                              lda #$08
+   11 A:0211  8d 98 02                           sta param+3
+   12 A:0214  20 25 02                           jsr convert_dec
+   13 A:0217  20 77 02                           jsr print_convert_dec
+   14 A:021a  a9 0d                              lda #$0d
+   15 A:021c  20 ba 02                           jsr chrout
+   16 A:021f  a9 0a                              lda #$0a
+   17 A:0221  20 ba 02                           jsr chrout
+   18 A:0224  60                                 rts 
+
+convert_dec.s
+
+    1 A:0225                           convert_dec 
+    2 A:0225  a9 00                              lda #$00
+    3 A:0227  8d 99 02                           sta dcb_result
+    4 A:022a  8d 9a 02                           sta dcb_result+1
+    5 A:022d  8d 9b 02                           sta dcb_result+2
+    6 A:0230  8d 9c 02                           sta dcb_result+3
+    7 A:0233  8d 9d 02                           sta dcb_result+4
+    8 A:0236  f8                                 sed 
+    9 A:0237  a2 20                              ldx #32
+   10 A:0239                           loop_convert_dec 
+   11 A:0239  0e 95 02                           asl param
+   12 A:023c  2e 96 02                           rol param+1
+   13 A:023f  2e 97 02                           rol param+2
+   14 A:0242  2e 98 02                           rol param+3
+   15 A:0245  ad 9d 02                           lda dcb_result+4
+   16 A:0248  6d 9d 02                           adc dcb_result+4
+   17 A:024b  8d 9d 02                           sta dcb_result+4
+   18 A:024e  ad 9c 02                           lda dcb_result+3
+   19 A:0251  6d 9c 02                           adc dcb_result+3
+   20 A:0254  8d 9c 02                           sta dcb_result+3
+   21 A:0257  ad 9b 02                           lda dcb_result+2
+   22 A:025a  6d 9b 02                           adc dcb_result+2
+   23 A:025d  8d 9b 02                           sta dcb_result+2
+   24 A:0260  ad 9a 02                           lda dcb_result+1
+   25 A:0263  6d 9a 02                           adc dcb_result+1
+   26 A:0266  8d 9a 02                           sta dcb_result+1
+   27 A:0269  ad 99 02                           lda dcb_result
+   28 A:026c  6d 99 02                           adc dcb_result
+   29 A:026f  8d 99 02                           sta dcb_result
+   30 A:0272  ca                                 dex 
+   31 A:0273  d0 c4                              bne loop_convert_dec
+   32 A:0275  d8                                 cld 
+   33 A:0276  60                                 rts 
+
+   35 A:0277                           print_convert_dec 
+   36 A:0277  a0 00                              ldy #0
+   37 A:0279                           loop_print_dec 
+   38 A:0279  b9 99 02                           lda dcb_result,y
+   39 A:027c  4a                                 lsr 
+   40 A:027d  4a                                 lsr 
+   41 A:027e  4a                                 lsr 
+   42 A:027f  4a                                 lsr 
+   43 A:0280  09 30                              ora #$30
+   44 A:0282  20 ba 02                           jsr chrout
+   45 A:0285  b9 99 02                           lda dcb_result,y
+   46 A:0288  29 0f                              and #$0f
+   47 A:028a  09 30                              ora #$30
+   48 A:028c  20 ba 02                           jsr chrout
+   49 A:028f  c8                                 iny 
+   50 A:0290  c0 05                              cpy #5
+   51 A:0292  d0 e5                              bne loop_print_dec
+   52 A:0294  60                                 rts 
+
+   55 A:0295                           param     
+   56 A:0295  00 ff 04 00                        .dsb 4,0
+
+   58 A:0299                           dcb_result 
+   59 A:0299  00 ff 05 00 00                     .dsb 5,0
+
+print_a_hex.s
+
+
+    2 A:029e                           print_a_hex 
+    3 A:029e  48                                 pha 
+    4 A:029f  4a                                 lsr 
+    5 A:02a0  4a                                 lsr 
+    6 A:02a1  4a                                 lsr 
+    7 A:02a2  4a                                 lsr 
+    8 A:02a3  20 ab 02                           jsr print_hex_digit
+    9 A:02a6  68                                 pla 
+   10 A:02a7  20 ab 02                           jsr print_hex_digit
+   11 A:02aa  60                                 rts 
+
+   13 A:02ab                           print_hex_digit 
+   14 A:02ab  29 0f                              and #$0f
+   15 A:02ad  c9 0a                              cmp #$0a
+   16 A:02af  90 03                              bcc print_lt_10
+   17 A:02b1  18                                 clc 
+   18 A:02b2  69 07                              adc #$07
+   19 A:02b4                           print_lt_10 
+   20 A:02b4  69 30                              adc #$30
+   21 A:02b6  20 ba 02                           jsr chrout
+   22 A:02b9  60                                 rts 
 
 bios.s
 
 
-    4 A:021b                           chrout    
-    5 A:021b  85 ff                              sta $ff
-    6 A:021d  60                                 rts 
+    4 A:02ba                           chrout    
+    5 A:02ba  85 ff                              sta $ff
+    6 A:02bc  60                                 rts 
 
-    8 A:021e                           chrin     
-    9 A:021e  a5 fe                              lda $fe
-   10 A:0220  60                                 rts 
+    8 A:02bd                           chrin     
+    9 A:02bd  a5 fe                              lda $fe
+   10 A:02bf  60                                 rts 
 
 spike.s
 
