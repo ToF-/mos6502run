@@ -1,6 +1,3 @@
-SED
-LDA #80
-CLC
-ADC #80
-CLD
-BRK
+#include "pgm.s"
+#include "bios.s"
+

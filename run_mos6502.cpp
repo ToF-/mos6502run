@@ -13,6 +13,8 @@
 #define ZERO      0x02
 #define CARRY     0x01
 
+#define CHAR_OUT 0x00FF
+#define CHAR_IN  0x00FE
 uint16_t origin = 0x0200;
 
 uint8_t memory[0x10000];
@@ -59,12 +61,23 @@ void ClockCycle(mos6502 *mpu) {
         printf("%s", buffer);
     }
     if (mpu->GetPC() == 0x0000) {
-        PrintState(mpu, buffer);
-        printf("%s", buffer);
         exit(0);
     }
 }
+
+void RunOutService(uint16_t address, uint8_t value) {
+    switch(address) {
+        case CHAR_OUT:
+            putchar(value);
+            break;
+    }
+}
+
 void MemoryWrite(uint16_t address, uint8_t value) {
+    if(trace) {
+        printf("MemoryWrite:%04x:%02x\n", address, value);
+    }
+    RunOutService(address, value);
     memory[address] = value;
 }
 
@@ -81,7 +94,5 @@ int main(int argc, char *argv[]) {
     init_memory();
     mpu.Reset();
     mpu.RunEternally();
-    PrintState(&mpu, buffer);
-    printf("%s", buffer);
     return 0;
 }
