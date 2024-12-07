@@ -9,4 +9,6 @@ LDA #$0A
 JSR chrout
 LDA #$0D
 JSR chrout
+JSR chrin
+JSR chrout
 RTS

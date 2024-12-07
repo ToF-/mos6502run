@@ -50,8 +50,17 @@ void PrintState(mos6502 *mpu, char *buffer) {
             status & CARRY ?     '1' : '0');
 }
 
+void RunInService(uint16_t address) {
+    switch(address) {
+        case CHAR_IN:
+            int value = getchar();
+            memory[address] = value;
+            break;
+    }
+}
 
 uint8_t MemoryRead(uint16_t address) {
+    RunInService(address);
     return memory[address];
 }
 

@@ -10,23 +10,25 @@ pgm.s
     4 A:0203  18                                 clc 
     5 A:0204  69 03                              adc #3
     6 A:0206  d8                                 cld 
-    7 A:0207  20 15 02                           jsr chrout
+    7 A:0207  20 1b 02                           jsr chrout
     8 A:020a  a9 0a                              lda #$0a
-    9 A:020c  20 15 02                           jsr chrout
+    9 A:020c  20 1b 02                           jsr chrout
    10 A:020f  a9 0d                              lda #$0d
-   11 A:0211  20 15 02                           jsr chrout
-   12 A:0214  60                                 rts 
+   11 A:0211  20 1b 02                           jsr chrout
+   12 A:0214  20 1e 02                           jsr chrin
+   13 A:0217  20 1b 02                           jsr chrout
+   14 A:021a  60                                 rts 
 
 bios.s
 
 
-    4 A:0215                           chrout    
-    5 A:0215  85 ff                              sta $ff
-    6 A:0217  60                                 rts 
+    4 A:021b                           chrout    
+    5 A:021b  85 ff                              sta $ff
+    6 A:021d  60                                 rts 
 
-    8 A:0218                           chrin     
-    9 A:0218  a5 fe                              lda $fe
-   10 A:021a  60                                 rts 
+    8 A:021e                           chrin     
+    9 A:021e  a5 fe                              lda $fe
+   10 A:0220  60                                 rts 
 
 spike.s
 
